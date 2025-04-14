@@ -1,3 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","3831","getAllRestaurants()","","Fri Apr 11 14:26:29 UTC 2025","passed","Fri Apr 11 14:26:33 UTC 2025","","restaurantsapitests.RestaurantsTest","restaurantsapitests.RestaurantsTest","getAllRestaurants"
-"","34151","getRestaurantByIdNotAuthorized()","","Fri Apr 11 14:25:55 UTC 2025","passed","Fri Apr 11 14:26:29 UTC 2025","","restaurantsapitests.RestaurantsTest","restaurantsapitests.RestaurantsTest","getRestaurantByIdNotAuthorized"
