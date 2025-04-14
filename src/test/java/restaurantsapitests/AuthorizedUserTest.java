@@ -1,5 +1,7 @@
 package restaurantsapitests;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import com.komy.ConfigManager;
 import com.komy.models.CreateRestaurantDto;
@@ -8,6 +10,9 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.komy.Main.BASE_URL;
 import static io.restassured.RestAssured.given;
@@ -68,5 +73,24 @@ public class AuthorizedUserTest {
                 .when()
                 .post(RESTAURANTS_URL);
         response.then().statusCode(403);
+    }
+
+    @Test
+    void deleteLastRestaurantForbidden() throws JsonProcessingException {
+        var response=given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(RESTAURANTS_URL);
+        response.then().statusCode(200);
+
+        var allIds = response.jsonPath().getString("id");
+        ObjectMapper mapper = new ObjectMapper();
+        var lastId = mapper.readValue(allIds, List.class).getLast();
+        given()
+                .header("Authorization", bearerToken)
+                .when()
+                .delete(RESTAURANTS_URL + lastId)
+                .then()
+                .statusCode(403);
     }
 }
