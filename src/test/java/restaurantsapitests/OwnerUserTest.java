@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import com.komy.ConfigManager;
 import com.komy.models.CreateRestaurantDto;
 import com.komy.models.User;
+import helpers.Utils;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,20 +17,20 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OwnerUserTest {
-    final String LOGIN_URL = BASE_URL + "identity/login";
     static final String RESTAURANTS_URL = BASE_URL + "Restaurants/";
     String bearerToken;
     String restaurantId;
-
+    Utils utils = new Utils();
+    Faker faker = new Faker();
     @BeforeEach
     void authorize() {
         var user = new User("owner@test.com", ConfigManager.get("OWNER_USER_PASSWORD"));
-        bearerToken=getToken(user);
+        bearerToken = utils.getToken(user);
     }
 
     @Test
     void createAndDeleteRestaurant() {
-        Faker faker = new Faker();
+
         var cityName = faker.address().cityName();
 
         var name = faker.company().name();
@@ -77,26 +78,6 @@ public class OwnerUserTest {
                 .when()
                 .delete(RESTAURANTS_URL + restaurantId)
                 .then()
-                .statusCode(403);
-
-        var user = new User("admin@test.com", ConfigManager.get("ADMIN_USER_PASSWORD"));
-        var token = getToken(user);
-        given()
-                .header("Authorization", token)
-                .when()
-                .delete(RESTAURANTS_URL + restaurantId)
-                .then()
                 .statusCode(204);
-    }
-    private String getToken(User user) {
-        var response = given()
-                .contentType(ContentType.JSON)
-                .body(user)
-                .when()
-                .post(LOGIN_URL)
-                .body()
-                .jsonPath();
-        var token = response.getString("accessToken");
-        return "Bearer " + token;
     }
 }

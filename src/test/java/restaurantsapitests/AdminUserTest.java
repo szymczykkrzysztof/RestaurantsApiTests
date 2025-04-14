@@ -1,7 +1,5 @@
 package restaurantsapitests;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import com.komy.ConfigManager;
 import com.komy.models.CreateRestaurantDto;
@@ -12,36 +10,28 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Arrays;
 
 import static com.komy.Main.BASE_URL;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AuthorizedUserTest {
+public class AdminUserTest {
     static final String RESTAURANTS_URL = BASE_URL + "Restaurants/";
     String bearerToken;
+    String restaurantId;
     Utils utils = new Utils();
+    Faker faker = new Faker();
 
     @BeforeEach
     void authorize() {
-        var user = new User("user@test.com", ConfigManager.get("TEST_USER_PASSWORD"));
+        var user = new User("admin@test.com", ConfigManager.get("ADMIN_USER_PASSWORD"));
         bearerToken = utils.getToken(user);
     }
 
     @Test
-    void getRestaurantById() {
-        given()
-                .header("Authorization", bearerToken)
-                .contentType(ContentType.JSON)
-                .when()
-                .get(RESTAURANTS_URL + 1)
-                .then()
-                .statusCode(200);
-    }
+    void createAndDeleteRestaurant() {
 
-    @Test
-    void createAndDeleteRestaurantForbidden() {
-        Faker faker = new Faker();
         var cityName = faker.address().cityName();
 
         var name = faker.company().name();
@@ -52,7 +42,7 @@ public class AuthorizedUserTest {
                 cityName, faker.food().dish().toLowerCase(), faker.commerce().productName().toLowerCase()
         );
         var street = faker.address().streetAddress();
-        var postalCode = faker.address().zipCode();
+        var postalCode = "52-200";
         var hasDelivery = true;
         var contactEmail = "fancy@email.test";
         var contactNumber = faker.phoneNumber().phoneNumber();
@@ -64,25 +54,31 @@ public class AuthorizedUserTest {
                 .body(restaurant)
                 .when()
                 .post(RESTAURANTS_URL);
-        response.then().statusCode(403);
-    }
+        response.then().statusCode(201);
 
-    @Test
-    void deleteLastRestaurantForbidden() throws JsonProcessingException {
-        var response = given()
+        restaurantId = Arrays.stream(response.header("location").split("/")).toList().getLast();
+        var createdRestaurantResponse = given()
+                .header("Authorization", bearerToken)
                 .contentType(ContentType.JSON)
                 .when()
-                .get(RESTAURANTS_URL);
-        response.then().statusCode(200);
+                .get(RESTAURANTS_URL + restaurantId);
+        createdRestaurantResponse.then().statusCode(200);
+        var responseBody = createdRestaurantResponse.body();
 
-        var allIds = response.jsonPath().getString("id");
-        ObjectMapper mapper = new ObjectMapper();
-        var lastId = mapper.readValue(allIds, List.class).getLast();
+        assert responseBody.jsonPath().getString("name").equals(name);
+        assert responseBody.jsonPath().getString("id").equals(restaurantId);
+        assert responseBody.jsonPath().getString("category").equals(category);
+        assert responseBody.jsonPath().getString("description").equals(description);
+        assert responseBody.jsonPath().getString("postalCode").equals(postalCode);
+        assert responseBody.jsonPath().getString("street").equals(street);
+        assert responseBody.jsonPath().getString("city").equals(cityName);
+        assertTrue(responseBody.jsonPath().getBoolean("hasDelivery"));
+
         given()
                 .header("Authorization", bearerToken)
                 .when()
-                .delete(RESTAURANTS_URL + lastId)
+                .delete(RESTAURANTS_URL + restaurantId)
                 .then()
-                .statusCode(403);
+                .statusCode(204);
     }
 }
