@@ -6,7 +6,7 @@ import io.restassured.http.ContentType;
 import static com.komy.Main.BASE_URL;
 import static io.restassured.RestAssured.given;
 
-public class Utils {
+public class Utilities {
     final String LOGIN_URL = BASE_URL + "identity/login";
 
     public String getToken(User user) {

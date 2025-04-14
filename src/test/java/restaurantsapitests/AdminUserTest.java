@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import com.komy.ConfigManager;
 import com.komy.models.CreateRestaurantDto;
 import com.komy.models.User;
-import helpers.Utils;
+import helpers.Utilities;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ public class AdminUserTest {
     static final String RESTAURANTS_URL = BASE_URL + "Restaurants/";
     String bearerToken;
     String restaurantId;
-    Utils utils = new Utils();
+    Utilities  utils = new Utilities();
     Faker faker = new Faker();
 
     @BeforeEach

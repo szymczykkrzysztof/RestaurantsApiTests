@@ -54,7 +54,7 @@ public class RestaurantsTest {
     }
 
     @Test
-    void createRestaurantNotAuthorized() throws JsonProcessingException {
+    void createRestaurantNotAuthorized() {
         Faker faker = new Faker();
         var cityName = faker.address().cityName();
 

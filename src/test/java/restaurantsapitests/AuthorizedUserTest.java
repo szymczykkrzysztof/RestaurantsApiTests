@@ -6,7 +6,7 @@ import com.github.javafaker.Faker;
 import com.komy.ConfigManager;
 import com.komy.models.CreateRestaurantDto;
 import com.komy.models.User;
-import helpers.Utils;
+import helpers.Utilities;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +20,12 @@ import static io.restassured.RestAssured.given;
 public class AuthorizedUserTest {
     static final String RESTAURANTS_URL = BASE_URL + "Restaurants/";
     String bearerToken;
-    Utils utils = new Utils();
+    Utilities utilities = new Utilities();
 
     @BeforeEach
     void authorize() {
         var user = new User("user@test.com", ConfigManager.get("TEST_USER_PASSWORD"));
-        bearerToken = utils.getToken(user);
+        bearerToken = utilities.getToken(user);
     }
 
     @Test
