@@ -11,7 +11,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.komy.Main.BASE_URL;
@@ -25,15 +24,7 @@ public class AuthorizedUserTest {
     @BeforeEach
     void authorize() {
         var user = new User("user@test.com", ConfigManager.get("TEST_USER_PASSWORD"));
-        var response = given()
-                .contentType(ContentType.JSON)
-                .body(user)
-                .when()
-                .post(LOGIN_URL)
-                .body()
-                .jsonPath();
-        var token = response.getString("accessToken");
-        bearerToken = "Bearer " + token;
+        bearerToken = getToken(user);
     }
 
     @Test
@@ -77,7 +68,7 @@ public class AuthorizedUserTest {
 
     @Test
     void deleteLastRestaurantForbidden() throws JsonProcessingException {
-        var response=given()
+        var response = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .get(RESTAURANTS_URL);
@@ -92,5 +83,17 @@ public class AuthorizedUserTest {
                 .delete(RESTAURANTS_URL + lastId)
                 .then()
                 .statusCode(403);
+    }
+
+    private String getToken(User user) {
+        var response = given()
+                .contentType(ContentType.JSON)
+                .body(user)
+                .when()
+                .post(LOGIN_URL)
+                .body()
+                .jsonPath();
+        var token = response.getString("accessToken");
+        return "Bearer " + token;
     }
 }

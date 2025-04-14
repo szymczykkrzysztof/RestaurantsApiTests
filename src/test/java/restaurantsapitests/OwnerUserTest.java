@@ -24,17 +24,9 @@ public class OwnerUserTest {
     @BeforeEach
     void authorize() {
         var user = new User("owner@test.com", ConfigManager.get("OWNER_USER_PASSWORD"));
-        System.out.println(LOGIN_URL);
-        var response = given()
-                .contentType(ContentType.JSON)
-                .body(user)
-                .when()
-                .post(LOGIN_URL)
-                .body()
-                .jsonPath();
-        var token = response.getString("accessToken");
-        bearerToken = "Bearer " + token;
+        bearerToken=getToken(user);
     }
+
     @Test
     void createAndDeleteRestaurant() {
         Faker faker = new Faker();
@@ -53,6 +45,7 @@ public class OwnerUserTest {
         var contactEmail = "fancy@email.test";
         var contactNumber = faker.phoneNumber().phoneNumber();
         var restaurant = new CreateRestaurantDto(postalCode, street, cityName, contactNumber, contactEmail, hasDelivery, category, description, name);
+
         Response response = given()
                 .header("Authorization", bearerToken)
                 .contentType(ContentType.JSON)
@@ -84,6 +77,26 @@ public class OwnerUserTest {
                 .when()
                 .delete(RESTAURANTS_URL + restaurantId)
                 .then()
+                .statusCode(403);
+
+        var user = new User("admin@test.com", ConfigManager.get("ADMIN_USER_PASSWORD"));
+        var token = getToken(user);
+        given()
+                .header("Authorization", token)
+                .when()
+                .delete(RESTAURANTS_URL + restaurantId)
+                .then()
                 .statusCode(204);
+    }
+    private String getToken(User user) {
+        var response = given()
+                .contentType(ContentType.JSON)
+                .body(user)
+                .when()
+                .post(LOGIN_URL)
+                .body()
+                .jsonPath();
+        var token = response.getString("accessToken");
+        return "Bearer " + token;
     }
 }
