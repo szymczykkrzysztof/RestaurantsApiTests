@@ -9,6 +9,10 @@ on:
 jobs:
   test-and-publish:
     runs-on: ubuntu-latest
+    env:
+      OWNER_USER_PASSWORD: ${{ secrets.OWNER_USER_PASSWORD }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
     permissions:
       contents: write
       pages: write
