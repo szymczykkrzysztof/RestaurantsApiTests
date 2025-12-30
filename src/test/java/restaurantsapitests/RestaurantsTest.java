@@ -21,7 +21,10 @@ public class RestaurantsTest {
 
     @Test
     void getAllRestaurants() {
-        RestAssured.get(RESTAURANTS_URL)
+        RestAssured.given()
+                .queryParam("pageSize", 10)
+                .queryParam("pageNumber", 1)
+                .get(RESTAURANTS_URL)
                 .then()
                 .statusCode(200)
                 .time(lessThan(60L), TimeUnit.SECONDS);
@@ -38,11 +41,13 @@ public class RestaurantsTest {
     void deleteLastRestaurantNotAuthorized() throws JsonProcessingException {
         var response = given()
                 .contentType(ContentType.JSON)
+                .queryParam("pageSize", 10)
+                .queryParam("pageNumber", 1)
                 .when()
                 .get(RESTAURANTS_URL);
         response.then().statusCode(200);
 
-        var allIds = response.jsonPath().getString("id");
+        var allIds = response.jsonPath().getString("items.id");
         ObjectMapper mapper = new ObjectMapper();
         var lastId = mapper.readValue(allIds, List.class).getLast();
 

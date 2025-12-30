@@ -34,7 +34,7 @@ public class OwnerUserTest {
         var cityName = faker.address().cityName();
 
         var name = faker.company().name();
-        var category = faker.food().ingredient();
+        var category = "Italian";
         var description = String.format(
                 "Nasza restauracja to wyjątkowe miejsce w sercu %s, gdzie tradycyjne smaki spotykają się z nowoczesną kuchnią. "
                         + "Specjalizujemy się w %s i oferujemy %s atmosferę idealną na każdą okazję.",
@@ -44,7 +44,7 @@ public class OwnerUserTest {
         var postalCode = "52-200";
         var hasDelivery = true;
         var contactEmail = "fancy@email.test";
-        var contactNumber = faker.phoneNumber().phoneNumber();
+        var contactNumber = "123-123-123";
         var restaurant = new CreateRestaurantDto(postalCode, street, cityName, contactNumber, contactEmail, hasDelivery, category, description, name);
 
         Response response = given()

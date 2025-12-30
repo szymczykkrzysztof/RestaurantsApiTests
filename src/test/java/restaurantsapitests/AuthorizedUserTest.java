@@ -34,7 +34,7 @@ public class AuthorizedUserTest {
                 .header("Authorization", bearerToken)
                 .contentType(ContentType.JSON)
                 .when()
-                .get(RESTAURANTS_URL + 1)
+                .get(RESTAURANTS_URL + 2)
                 .then()
                 .statusCode(200);
     }
@@ -71,11 +71,13 @@ public class AuthorizedUserTest {
     void deleteLastRestaurantForbidden() throws JsonProcessingException {
         var response = given()
                 .contentType(ContentType.JSON)
+                .queryParam("pageSize", 10)
+                .queryParam("pageNumber", 1)
                 .when()
                 .get(RESTAURANTS_URL);
         response.then().statusCode(200);
 
-        var allIds = response.jsonPath().getString("id");
+        var allIds = response.jsonPath().getString("items.id");
         ObjectMapper mapper = new ObjectMapper();
         var lastId = mapper.readValue(allIds, List.class).getLast();
         given()
