@@ -3,7 +3,7 @@
 Automated REST API test framework for the **Restaurants API**.  
 The project focuses on **reliable, maintainable, and scalable API test automation**, implemented with industry-standard tools and practices.
 
-This repository is part of my professional QA Automation portfolio.
+This repository is part of my professional QA Automation portfolio. 
 
 ---
 
@@ -18,7 +18,7 @@ The main goal is to verify correctness, stability, and contract consistency of A
 - Request and response validation
 - Error handling and edge cases
 
-The framework is designed to be **easy to extend**, **CI/CD ready**, and suitable for real-world enterprise API testing.
+The framework is designed to be **easy to extend**, **CI/CD ready**, and suitable for real-world enterprise API testing. Tests are executed automatically via GitHub Actions pipeline using Maven and JUnit on every commit.
 
 ---
 
